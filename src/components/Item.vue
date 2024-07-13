@@ -19,6 +19,30 @@
         </small>
       </b-card-text>
     </b-card-body>
+    <template #footer>
+      <p>
+      <b-button-group class="float-left">
+        <b-button size="sm" variant="outline-primary">
+          <!--
+          <b-icon-check v-if="addedToCart" />
+          <b-icon-square v-else />
+          -->
+          <b-icon-square />
+          Select
+        </b-button> 
+        <b-button size="sm" variant="outline-primary" href="http://127.0.0.1:8888/lab/tree/work/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">
+          <b-icon-cloud />Start workflow...
+        </b-button> 
+        <!--
+        <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
+          <b-dropdown-item><b-icon-cloud /><span class="title">Jupyter Notebook</span></b-dropdown-item>
+          <b-dropdown-item><b-icon-cloud /><span class="title">Databricks</span></b-dropdown-item>
+          <b-dropdown-item><b-icon-cloud /><span class="title">Snowflake</span></b-dropdown-item>
+        </b-dropdown>
+        -->
+      </b-button-group>
+      </p>
+    </template>
   </b-card>
 </template>
 
