@@ -21,26 +21,28 @@
     </b-card-body>
     <template #footer>
       <p>
-      <b-button-group class="float-left">
-        <b-button size="sm" variant="outline-primary">
-          <!--
-          <b-icon-check v-if="addedToCart" />
-          <b-icon-square v-else />
-          -->
-          <b-icon-square />
-          Select
-        </b-button> 
-        <b-button size="sm" variant="outline-primary" href="http://127.0.0.1:8888/lab/tree/work/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">
-          <b-icon-cloud />Start workflow...
-        </b-button> 
-        <!--
-        <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
-          <b-dropdown-item><b-icon-cloud /><span class="title">Jupyter Notebook</span></b-dropdown-item>
-          <b-dropdown-item><b-icon-cloud /><span class="title">Databricks</span></b-dropdown-item>
-          <b-dropdown-item><b-icon-cloud /><span class="title">Snowflake</span></b-dropdown-item>
-        </b-dropdown>
-        -->
-      </b-button-group>
+        <b-button-group class="float-left">
+          <b-button size="sm" variant="outline-primary">
+            <!--
+            <b-icon-check v-if="addedToCart" />
+            <b-icon-square v-else />
+            -->
+            <b-icon-square />
+            Select
+          </b-button>
+          <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
+            <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/05_3DEP_Generate_Canopy_Height_Models_User_AOI.ipynb" target="_blank">Generate Canopy Height Model</b-dropdown-item>
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/06_3DEP_Topographic_Differencing.ipynb" target="_blank">Perform Topographic Differencing</b-dropdown-item>
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/07_3DEP_Generate_Colorized_PointClouds.ipynb" target="_blank">Generate Colorized Point Clouds</b-dropdown-item>
+            </b-dropdown-group>
+            <b-dropdown-divider></b-dropdown-divider>
+            <b-dropdown-item href="#" disabled>Open in Databricks</b-dropdown-item>
+            <b-dropdown-item href="#" disabled>Open in Snowflake</b-dropdown-item>
+            <b-dropdown-item href="#" disabled>Open in Google Colab</b-dropdown-item>
+          </b-dropdown>
+        </b-button-group>
       </p>
     </template>
   </b-card>
@@ -54,6 +56,7 @@ import STAC from '../models/stac';
 import { formatTemporalExtent, formatTimestamp, formatMediaType } from '@radiantearth/stac-fields/formatters';
 import Registry from '@radiantearth/stac-fields/registry';
 import Utils from '../utils';
+import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider } from 'bootstrap-vue';
 
 Registry.addDependency('content-type', require('content-type'));
 
@@ -61,6 +64,10 @@ export default {
   name: 'Item',
   components: {
     StacLink,
+    BDropdown,
+    BDropdownItem,
+    BDropdownGroup,
+    BDropdownDivider,
     Keywords: () => import('./Keywords.vue')
   },
   filters: {
