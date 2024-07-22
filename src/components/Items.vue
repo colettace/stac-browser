@@ -7,6 +7,23 @@
     </header>
 
     <Pagination ref="topPagination" v-if="showPagination" :pagination="pagination" placement="top" @paginate="paginate" />
+    <div v-if="cartNotEmpty">
+      <b-button-group class="float-left">
+        <b-button size="sm" variant="outline-primary" @click="clearCart">Clear selection</b-button>
+        <b-dropdown size="sm" variant="outline-primary" :text="CartBeginWorkflowButtonLabel">
+          <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
+            <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>
+            <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/05_3DEP_Generate_Canopy_Height_Models_User_AOI.ipynb" target="_blank">Generate Canopy Height Model</b-dropdown-item>
+            <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/06_3DEP_Topographic_Differencing.ipynb" target="_blank">Perform Topographic Differencing</b-dropdown-item>
+            <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/07_3DEP_Generate_Colorized_PointClouds.ipynb" target="_blank">Generate Colorized Point Clouds</b-dropdown-item>
+          </b-dropdown-group>
+          <b-dropdown-divider />
+          <b-dropdown-item href="#" disabled>Open in Databricks</b-dropdown-item>
+          <b-dropdown-item href="#" disabled>Open in Snowflake</b-dropdown-item>
+          <b-dropdown-item href="#" disabled>Open in Google Colab</b-dropdown-item>
+        </b-dropdown>
+      </b-button-group>
+    </div>
     <template v-if="allowFilter">
       <b-button v-if="api" v-b-toggle.itemFilter class="mb-4 mt-2" :class="{'ml-3': showPagination}" :variant="hasFilters && !filtersOpen ? 'primary' : 'outline-primary'">
         <b-icon-search />
@@ -22,16 +39,19 @@
       </b-collapse>
     </template>
 
-    <section class="list">
-      <Loading v-if="loading" fill top />
-      <b-card-group v-if="chunkedItems.length > 0" columns>
-        <Item v-for="item in chunkedItems" :item="item" :key="item.href" />
-      </b-card-group>
-      <b-alert v-else :variant="hasFilters ? 'warning' : 'info'" show>
-        <template v-if="hasFilters">{{ $t('search.noItemsFound') }}</template>
-        <template v-else>{{ $t('items.noneAvailableForCollection') }}</template>
-      </b-alert>
-    </section>
+
+    <div class="clear: both">
+      <section class="list">
+        <Loading v-if="loading" fill top />
+        <b-card-group v-if="chunkedItems.length > 0" columns>
+          <Item v-for="item in chunkedItems" :item="item" :key="item.href" @AddItemToCart="handleAddItemToCart" />
+        </b-card-group>
+        <b-alert v-else :variant="hasFilters ? 'warning' : 'info'" show>
+          <template v-if="hasFilters">{{ $t('search.noItemsFound') }}</template>
+          <template v-else>{{ $t('items.noneAvailableForCollection') }}</template>
+        </b-alert>
+      </section>
+    </div>
 
     <Pagination v-if="showPagination" :pagination="pagination" @paginate="paginate" />
     <b-button v-else-if="hasMore" @click="showMore" variant="primary" v-b-visible.300="showMore">{{ $t('showMore') }}</b-button>
@@ -46,6 +66,7 @@ import { BCollapse, BIconSearch } from "bootstrap-vue";
 import Utils from '../utils';
 import STAC from '../models/stac';
 import { mapState } from 'vuex';
+import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider } from 'bootstrap-vue';
 
 export default {
   name: "Items",
@@ -56,7 +77,11 @@ export default {
     SearchFilter: () => import('./SearchFilter.vue'),
     Loading,
     Pagination,
-    SortButtons: () => import('./SortButtons.vue')
+    SortButtons: () => import('./SortButtons.vue'),
+    BDropdown,
+    BDropdownItem,
+    BDropdownGroup,
+    BDropdownDivider
   },
   props: {
     items: {
@@ -104,7 +129,8 @@ export default {
     return {
       shownItems: this.chunkSize,
       filtersOpen: this.showFilters,
-      sort: 0
+      sort: 0,
+      uiSelected: []
     };
   },
   computed: {
@@ -154,6 +180,15 @@ export default {
         }
       }
       return false;
+    },
+    uiSelectedCount(){
+      return this.uiSelected.length;
+    },
+    cartNotEmpty(){
+      return (0 != this.uiSelected.length );
+    },
+    CartBeginWorkflowButtonLabel(){
+      return "Begin Workflow with " + this.uiSelectedCount + " Items";
     }
   },
   watch: {
@@ -184,6 +219,13 @@ export default {
         Utils.scrollTo(this.$refs.topPagination.$el);
       }
       this.$emit('paginate', link);
+    },
+    handleAddItemToCart( stacItem ){
+      this.uiSelected.push( stacItem );
+    },
+    clearCart(){
+      console.log( "Clearing Cart...");
+      this.uiSelected = [];
     }
   }
 };

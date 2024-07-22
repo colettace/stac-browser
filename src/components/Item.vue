@@ -22,13 +22,13 @@
     <template #footer>
       <p>
         <b-button-group class="float-left">
-          <b-button size="sm" variant="outline-primary">
+          <b-button size="sm" variant="outline-primary" @click="AddItemToCart">
             <!--
             <b-icon-check v-if="addedToCart" />
             <b-icon-square v-else />
             -->
-            <b-icon-square />
-            Select
+            <b-icon icon="square" />
+            Add to Cart
           </b-button>
           <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
             <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
@@ -37,7 +37,7 @@
               <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/06_3DEP_Topographic_Differencing.ipynb" target="_blank">Perform Topographic Differencing</b-dropdown-item>
               <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/07_3DEP_Generate_Colorized_PointClouds.ipynb" target="_blank">Generate Colorized Point Clouds</b-dropdown-item>
             </b-dropdown-group>
-            <b-dropdown-divider></b-dropdown-divider>
+            <b-dropdown-divider />
             <b-dropdown-item href="#" disabled>Open in Databricks</b-dropdown-item>
             <b-dropdown-item href="#" disabled>Open in Snowflake</b-dropdown-item>
             <b-dropdown-item href="#" disabled>Open in Google Colab</b-dropdown-item>
@@ -56,7 +56,7 @@ import STAC from '../models/stac';
 import { formatTemporalExtent, formatTimestamp, formatMediaType } from '@radiantearth/stac-fields/formatters';
 import Registry from '@radiantearth/stac-fields/registry';
 import Utils from '../utils';
-import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider } from 'bootstrap-vue';
+import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider, BIcon } from 'bootstrap-vue';
 
 Registry.addDependency('content-type', require('content-type'));
 
@@ -68,6 +68,7 @@ export default {
     BDropdownItem,
     BDropdownGroup,
     BDropdownDivider,
+    BIcon,
     Keywords: () => import('./Keywords.vue')
   },
   filters: {
@@ -122,6 +123,9 @@ export default {
         return;
       }
       this.$store.commit(visible ? 'queue' : 'unqueue', this.item.href);
+    },
+    AddItemToCart(){
+      this.$emit( 'AddItemToCart', this.data );
     }
   }
 };
