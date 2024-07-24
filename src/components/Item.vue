@@ -125,6 +125,7 @@ export default {
       this.$store.commit(visible ? 'queue' : 'unqueue', this.item.href);
     },
     AddItemToCart(){
+      console.log( "Emitting AddItemToCart event.");
       this.$emit( 'AddItemToCart', this.data );
     }
   }

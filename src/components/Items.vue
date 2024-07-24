@@ -130,7 +130,7 @@ export default {
       shownItems: this.chunkSize,
       filtersOpen: this.showFilters,
       sort: 0,
-      uiSelected: []
+      uiSelectedSet: new Set
     };
   },
   computed: {
@@ -181,11 +181,18 @@ export default {
       }
       return false;
     },
+    uiSelectedArray(){
+      // This is to trigger Vue's reactivity since ES6 Set containers
+      // Aren't reactive.
+      return Array.from( this.uiSelectedSet );
+    },
     uiSelectedCount(){
-      return this.uiSelected.length;
+      return this.uiSelectedArray.length;
     },
     cartNotEmpty(){
-      return (0 != this.uiSelected.length );
+      console.log( "cartNotEmpty?");
+      console.log( this.uiSelectedCount );
+      return (this.uiSelectedCount > 0);
     },
     CartBeginWorkflowButtonLabel(){
       return "Begin Workflow with " + this.uiSelectedCount + " Items";
@@ -221,11 +228,16 @@ export default {
       this.$emit('paginate', link);
     },
     handleAddItemToCart( stacItem ){
-      this.uiSelected.push( stacItem );
+      console.log( "Adding STACItem to cart:" );
+      console.log( stacItem );
+      this.uiSelectedSet.add( stacItem );
+      // Trigger reactivity manually
+      this.uiSelectedSet = new Set( this.uiSelectedSet );
     },
     clearCart(){
       console.log( "Clearing Cart...");
-      this.uiSelected = [];
+      // Trigger reactivity manually
+      this.uiSelectedSet = new Set();
     }
   }
 };
