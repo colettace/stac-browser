@@ -11,6 +11,12 @@
       <b-button-group class="float-left">
         <b-button size="sm" variant="outline-primary" @click="clearCart">Clear selection</b-button>
         <b-dropdown size="sm" variant="outline-primary" :text="CartBeginWorkflowButtonLabel">
+          <b-dropdown-text>
+            <p v-for="(selectedStacItem, selectedStacItemIndex) in uiSelectedArray" :key="selectedStacItem.id">
+              {{ selectedStacItemIndex }}: {{ selectedStacItem.id }}
+            </p>
+          </b-dropdown-text>
+          <b-dropdown-divider />
           <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
             <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>
             <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/05_3DEP_Generate_Canopy_Height_Models_User_AOI.ipynb" target="_blank">Generate Canopy Height Model</b-dropdown-item>
@@ -62,10 +68,10 @@
 import Item from './Item.vue';
 import Loading from './Loading.vue';
 import Pagination from './Pagination.vue';
-import { BCollapse, BIconSearch } from "bootstrap-vue";
 import Utils from '../utils';
 import STAC from '../models/stac';
 import { mapState } from 'vuex';
+import { BCollapse, BDropdownText, BIconSearch } from "bootstrap-vue";
 import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider } from 'bootstrap-vue';
 
 export default {
@@ -81,7 +87,8 @@ export default {
     BDropdown,
     BDropdownItem,
     BDropdownGroup,
-    BDropdownDivider
+    BDropdownDivider,
+    BDropdownText
   },
   props: {
     items: {

@@ -27,7 +27,6 @@
             <b-icon-check v-if="addedToCart" />
             <b-icon-square v-else />
             -->
-            <b-icon icon="square" />
             Add to Cart
           </b-button>
           <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
@@ -56,7 +55,7 @@ import STAC from '../models/stac';
 import { formatTemporalExtent, formatTimestamp, formatMediaType } from '@radiantearth/stac-fields/formatters';
 import Registry from '@radiantearth/stac-fields/registry';
 import Utils from '../utils';
-import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider, BIcon } from 'bootstrap-vue';
+import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider } from 'bootstrap-vue';
 
 Registry.addDependency('content-type', require('content-type'));
 
@@ -68,7 +67,6 @@ export default {
     BDropdownItem,
     BDropdownGroup,
     BDropdownDivider,
-    BIcon,
     Keywords: () => import('./Keywords.vue')
   },
   filters: {
