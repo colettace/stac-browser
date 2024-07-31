@@ -21,9 +21,9 @@
     </b-card-body>
     <template #footer>
       <p>
-        <b-button-group class="float-left">
+        <b-button-group center >
           <b-button v-if="itemNotInCart" size="sm" variant="outline-primary" @click="handleAddItemToCart">Add to Cart</b-button>
-          <b-button v-else size="sm" variant="outline-primary" @click="handleRemoveItemFromCart">Remove from Cart</b-button>
+          <b-button v-else size="sm" variant="outline-danger" @click="handleRemoveItemFromCart">Remove from Cart</b-button>
           <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
             <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
               <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>

@@ -6,52 +6,54 @@
       <SortButtons v-if="!api && items.length > 1" v-model="sort" />
     </header>
 
-    <Pagination ref="topPagination" v-if="showPagination" :pagination="pagination" placement="top" @paginate="paginate" />
-    <div v-if="cartNotEmpty">
-      <section>
-        <b-button-group class="float-left">
-          <b-button size="sm" variant="outline-primary" @click="clearCart">Clear selection</b-button>
-          <b-dropdown size="sm" variant="outline-primary" :text="CartBeginWorkflowButtonLabel">
-            <b-dropdown-text>
-              <p>Selected data products:</p>
-              <ol>
-                <li v-for="selectedStacItem in uiSelectedArray" :key="selectedStacItem.id">
-                  {{ selectedStacItem.id }}
-                </li>
-              </ol>
-            </b-dropdown-text>
-            <b-dropdown-divider />
-            <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
-              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>
-              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/05_3DEP_Generate_Canopy_Height_Models_User_AOI.ipynb" target="_blank">Generate Canopy Height Model</b-dropdown-item>
-              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/06_3DEP_Topographic_Differencing.ipynb" target="_blank">Perform Topographic Differencing</b-dropdown-item>
-              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/07_3DEP_Generate_Colorized_PointClouds.ipynb" target="_blank">Generate Colorized Point Clouds</b-dropdown-item>
-            </b-dropdown-group>
-            <b-dropdown-divider />
-            <b-dropdown-item href="#" disabled>Open in Databricks</b-dropdown-item>
-            <b-dropdown-item href="#" disabled>Open in Snowflake</b-dropdown-item>
-            <b-dropdown-item href="#" disabled>Open in Google Colab</b-dropdown-item>
-          </b-dropdown>
-        </b-button-group>
-      </section>
+    <div class="d-flex">
+      <Pagination ref="topPagination" v-if="showPagination" :pagination="pagination" placement="top" @paginate="paginate" />
+      <div v-if="cartNotEmpty">
+        <section>
+          <b-button-group class="mb-4 mt-2 ml-2">
+            <b-dropdown variant="primary" :text="CartBeginWorkflowButtonLabel">
+              <b-dropdown-text>
+                <p>Selected data products:</p>
+                <ol>
+                  <li v-for="selectedStacItem in uiSelectedArray" :key="selectedStacItem.id">
+                    {{ selectedStacItem.id }}
+                  </li>
+                </ol>
+              </b-dropdown-text>
+              <b-dropdown-divider />
+              <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
+                <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>
+                <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/05_3DEP_Generate_Canopy_Height_Models_User_AOI.ipynb" target="_blank">Generate Canopy Height Model</b-dropdown-item>
+                <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/06_3DEP_Topographic_Differencing.ipynb" target="_blank">Perform Topographic Differencing</b-dropdown-item>
+                <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/07_3DEP_Generate_Colorized_PointClouds.ipynb" target="_blank">Generate Colorized Point Clouds</b-dropdown-item>
+              </b-dropdown-group>
+              <b-dropdown-divider />
+              <b-dropdown-item href="#" disabled>Open in Databricks</b-dropdown-item>
+              <b-dropdown-item href="#" disabled>Open in Snowflake</b-dropdown-item>
+              <b-dropdown-item href="#" disabled>Open in Google Colab</b-dropdown-item>
+            </b-dropdown>
+            <b-button variant="danger" @click="clearCart">Clear selection</b-button>
+          </b-button-group>
+        </section>
+      </div>
+
+      <template v-if="allowFilter">
+        <b-button v-if="api" v-b-toggle.itemFilter class="mb-4 mt-2" :class="{'ml-3': showPagination}" :variant="hasFilters && !filtersOpen ? 'primary' : 'outline-primary'">
+          <b-icon-search />
+          {{ filtersOpen ? $t('items.hideFilter') : $t('items.showFilter') }}
+          <b-badge v-if="hasFilters && !filtersOpen" variant="dark">{{ filterCount }}</b-badge>
+        </b-button>
+        <b-collapse id="itemFilter" v-model="filtersOpen">
+          <SearchFilter
+            type="Items"
+            :title="$t('items.filter')" :parent="stac"
+            :value="apiFilters" @input="emitFilter"
+          />
+        </b-collapse>
+      </template>
     </div>
-    <template v-if="allowFilter">
-      <b-button v-if="api" v-b-toggle.itemFilter class="mb-4 mt-2" :class="{'ml-3': showPagination}" :variant="hasFilters && !filtersOpen ? 'primary' : 'outline-primary'">
-        <b-icon-search />
-        {{ filtersOpen ? $t('items.hideFilter') : $t('items.showFilter') }}
-        <b-badge v-if="hasFilters && !filtersOpen" variant="dark">{{ filterCount }}</b-badge>
-      </b-button>
-      <b-collapse id="itemFilter" v-model="filtersOpen">
-        <SearchFilter
-          type="Items"
-          :title="$t('items.filter')" :parent="stac"
-          :value="apiFilters" @input="emitFilter"
-        />
-      </b-collapse>
-    </template>
 
-
-    <div class="clear: both">
+    <div>
       <section class="list">
         <Loading v-if="loading" fill top />
         <b-card-group v-if="chunkedItems.length > 0" columns>
