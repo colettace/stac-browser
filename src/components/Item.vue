@@ -22,13 +22,8 @@
     <template #footer>
       <p>
         <b-button-group class="float-left">
-          <b-button size="sm" variant="outline-primary" @click="AddItemToCart">
-            <!--
-            <b-icon-check v-if="addedToCart" />
-            <b-icon-square v-else />
-            -->
-            Add to Cart
-          </b-button>
+          <b-button v-if="itemNotInCart" size="sm" variant="outline-primary" @click="handleAddItemToCart">Add to Cart</b-button>
+          <b-button v-else size="sm" variant="outline-primary" @click="handleRemoveItemFromCart">Remove from Cart</b-button>
           <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
             <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
               <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>
@@ -48,7 +43,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapMutations } from 'vuex';
 import ThumbnailCardMixin from './ThumbnailCardMixin';
 import StacLink from './StacLink.vue';
 import STAC from '../models/stac';
@@ -86,7 +81,7 @@ export default {
   },
   computed: {
     ...mapState(['showKeywordsInItemCards']),
-    ...mapGetters(['getStac']),
+    ...mapGetters(['getStac', 'itemInCart' ]),
     data() {
       return this.getStac(this.item);
     },
@@ -113,6 +108,9 @@ export default {
     },
     hasDescription() {
       return this.data instanceof STAC && Utils.hasText(this.data.properties.description);
+    },
+    itemNotInCart() {
+      return !this.itemInCart( this.data );
     }
   },
   methods: {
@@ -122,10 +120,13 @@ export default {
       }
       this.$store.commit(visible ? 'queue' : 'unqueue', this.item.href);
     },
-    AddItemToCart(){
-      console.log( "Emitting AddItemToCart event.");
-      this.$emit( 'AddItemToCart', this.data );
-    }
+    ...mapMutations(['AddItemToCart', 'RemoveItemFromCart']),
+    handleAddItemToCart() {
+      this.AddItemToCart( this.data );
+    },
+    handleRemoveItemFromCart() {
+      this.RemoveItemFromCart( this.data );
+    },
   }
 };
 </script>
