@@ -10,7 +10,7 @@
       <Pagination ref="topPagination" v-if="showPagination" :pagination="pagination" placement="top" @paginate="paginate" />
       <div v-if="cartNotEmpty">
         <section>
-          <b-button-group class="mb-4 mt-2 ml-2">
+          <b-button-group class="mb-4 mt-2 ml-4">
             <b-dropdown variant="primary" :text="CartBeginWorkflowButtonLabel">
               <b-dropdown-text>
                 <p>Selected data products:</p>
@@ -32,7 +32,7 @@
               <b-dropdown-item href="#" disabled>Open in Snowflake</b-dropdown-item>
               <b-dropdown-item href="#" disabled>Open in Google Colab</b-dropdown-item>
             </b-dropdown>
-            <b-button variant="danger" @click="clearCart">Clear selection</b-button>
+            <b-button variant="danger" @click="clearCart">Clear cart</b-button>
           </b-button-group>
         </section>
       </div>
@@ -199,8 +199,6 @@ export default {
       return this.uiSelectedArray.length;
     },
     cartNotEmpty() {
-      console.log( "cartNotEmpty?");
-      console.log( this.uiSelectedCount );
       return (this.uiSelectedCount > 0);
     },
     CartBeginWorkflowButtonLabel(){
@@ -236,7 +234,7 @@ export default {
         Utils.scrollTo(this.$refs.topPagination.$el);
       }
       this.$emit('paginate', link);
-    },
+    }
   }
 };
 </script>

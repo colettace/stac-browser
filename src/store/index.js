@@ -635,21 +635,16 @@ function getStore(config, router) {
       },
       // Begin Cart mutations
       AddItemToCart( state, stacItem ){
-        console.log( "Adding STACItem to cart:" );
-        console.log( stacItem );
         state.uiSelectedSet.add( stacItem );
         // Trigger reactivity manually
         state.uiSelectedSet = new Set( state.uiSelectedSet );
       },
       RemoveItemFromCart( state, stacItem ){
-        console.log( "Removing STACItem from cart:" );
-        console.log( stacItem );
         state.uiSelectedSet.delete( stacItem );
         // Trigger reactivity manually
         state.uiSelectedSet = new Set( state.uiSelectedSet );
       },
       clearCart( state ){
-        console.log( "Clearing Cart...");
         // Trigger reactivity manually
         state.uiSelectedSet = new Set();
       }
