@@ -51,12 +51,16 @@ function getStore(config, router) {
     nextCollectionsLink: null
   });
 
+  const cartDefaults = () => ({
+    uiSelectedSet: new Set
+  });
+
   return new Vuex.Store({
     strict: process.env.NODE_ENV !== 'production',
     modules: {
       auth: auth(router)
     },
-    state: Object.assign({}, config, localDefaults(), catalogDefaults(), {
+    state: Object.assign({}, config, localDefaults(), catalogDefaults(), cartDefaults(), {
       // Global settings
       database: {}, // STAC object, Error object or Loading object or Promise (when loading)
       allowSelectCatalog: !config.catalogUrl,
@@ -370,7 +374,17 @@ function getStore(config, router) {
           })
           .map(([l, q]) => q >= 1 ? l : `${l};q=${q}`)
           .join(',');
+      },
+      // Begin cart functions
+      uiSelectedArray: state => {
+        // This is to trigger Vue's reactivity since ES6 Set containers
+        // Aren't reactive.
+        return Array.from( state.uiSelectedSet );
+      },
+      itemInCart: state => stacItem => {
+        return state.uiSelectedSet.has( stacItem );
       }
+      // end cart functions
     },
     mutations: {
       config(state, config) {
@@ -618,7 +632,23 @@ function getStore(config, router) {
           console.trace(error);
         }
         state.globalError = error;
+      },
+      // Begin Cart mutations
+      AddItemToCart( state, stacItem ){
+        state.uiSelectedSet.add( stacItem );
+        // Trigger reactivity manually
+        state.uiSelectedSet = new Set( state.uiSelectedSet );
+      },
+      RemoveItemFromCart( state, stacItem ){
+        state.uiSelectedSet.delete( stacItem );
+        // Trigger reactivity manually
+        state.uiSelectedSet = new Set( state.uiSelectedSet );
+      },
+      clearCart( state ){
+        // Trigger reactivity manually
+        state.uiSelectedSet = new Set();
       }
+      // end cart mutations
     },
     actions: {
       async config(cx, config) {

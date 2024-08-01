@@ -19,17 +19,38 @@
         </small>
       </b-card-text>
     </b-card-body>
+    <template #footer>
+      <p>
+        <b-button-group center >
+          <b-button v-if="itemNotInCart" size="sm" variant="outline-primary" @click="handleAddItemToCart">Add to Cart</b-button>
+          <b-button v-else size="sm" variant="outline-danger" @click="handleRemoveItemFromCart">Remove from Cart</b-button>
+          <b-dropdown size="sm" variant="outline-primary" text="Begin Workflow">
+            <b-dropdown-group id="jupyter-dropdown-group" header="Provision notebook environment in your cloud">
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/01_3DEP_Generate_DEM_User_AOI.ipynb" target="_blank">Generate DEM </b-dropdown-item>
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/05_3DEP_Generate_Canopy_Height_Models_User_AOI.ipynb" target="_blank">Generate Canopy Height Model</b-dropdown-item>
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/06_3DEP_Topographic_Differencing.ipynb" target="_blank">Perform Topographic Differencing</b-dropdown-item>
+              <b-dropdown-item href="http://127.0.0.1:8888/lab/tree/OT_3DEP_Workflows/notebooks/07_3DEP_Generate_Colorized_PointClouds.ipynb" target="_blank">Generate Colorized Point Clouds</b-dropdown-item>
+            </b-dropdown-group>
+            <b-dropdown-divider />
+            <b-dropdown-item href="#" disabled>Open in Databricks</b-dropdown-item>
+            <b-dropdown-item href="#" disabled>Open in Snowflake</b-dropdown-item>
+            <b-dropdown-item href="#" disabled>Open in Google Colab</b-dropdown-item>
+          </b-dropdown>
+        </b-button-group>
+      </p>
+    </template>
   </b-card>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapMutations } from 'vuex';
 import ThumbnailCardMixin from './ThumbnailCardMixin';
 import StacLink from './StacLink.vue';
 import STAC from '../models/stac';
 import { formatTemporalExtent, formatTimestamp, formatMediaType } from '@radiantearth/stac-fields/formatters';
 import Registry from '@radiantearth/stac-fields/registry';
 import Utils from '../utils';
+import { BDropdown, BDropdownItem, BDropdownGroup, BDropdownDivider } from 'bootstrap-vue';
 
 Registry.addDependency('content-type', require('content-type'));
 
@@ -37,6 +58,10 @@ export default {
   name: 'Item',
   components: {
     StacLink,
+    BDropdown,
+    BDropdownItem,
+    BDropdownGroup,
+    BDropdownDivider,
     Keywords: () => import('./Keywords.vue')
   },
   filters: {
@@ -56,7 +81,7 @@ export default {
   },
   computed: {
     ...mapState(['showKeywordsInItemCards']),
-    ...mapGetters(['getStac']),
+    ...mapGetters(['getStac', 'itemInCart' ]),
     data() {
       return this.getStac(this.item);
     },
@@ -83,6 +108,9 @@ export default {
     },
     hasDescription() {
       return this.data instanceof STAC && Utils.hasText(this.data.properties.description);
+    },
+    itemNotInCart() {
+      return !this.itemInCart( this.data );
     }
   },
   methods: {
@@ -91,7 +119,14 @@ export default {
         return;
       }
       this.$store.commit(visible ? 'queue' : 'unqueue', this.item.href);
-    }
+    },
+    ...mapMutations(['AddItemToCart', 'RemoveItemFromCart']),
+    handleAddItemToCart() {
+      this.AddItemToCart( this.data );
+    },
+    handleRemoveItemFromCart() {
+      this.RemoveItemFromCart( this.data );
+    },
   }
 };
 </script>
